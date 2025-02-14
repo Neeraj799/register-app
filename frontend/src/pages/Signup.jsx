@@ -16,21 +16,21 @@ const Signup = () => {
 
   const navigate = useNavigate();
 
-  // const signupValidationSchema = yup.object().shape({
-  //   name: yup
-  //     .string()
-  //     .min(3, "Name must be atleast 3 characters long")
-  //     .required("Name is required"),
-  //   email: yup
-  //     .string()
-  //     .email("Email must be a valid email")
-  //     .required("Email is required"),
+  const signupValidationSchema = yup.object().shape({
+    name: yup
+      .string()
+      .min(3, "Name must be atleast 3 characters long")
+      .required("Name is required"),
+    email: yup
+      .string()
+      .email("Email must be a valid email")
+      .required("Email is required"),
 
-  //   password: yup
-  //     .string()
-  //     .min(6, "Password must be a atleast 6 characters long")
-  //     .required("Password is required"),
-  // });
+    password: yup
+      .string()
+      .min(6, "Password must be a atleast 6 characters long")
+      .required("Password is required"),
+  });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -47,16 +47,16 @@ const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // try {
-    //   await signupValidationSchema.validate(signupInfo, { abortEarly: false });
-    // } catch (validationErrors) {
-    //   const errors = {};
-    //   validationErrors.inner.forEach((err) => {
-    //     errors[err.path] = err.message;
-    //   });
-    //   setErrors(errors);
-    //   return;
-    // }
+    try {
+      await signupValidationSchema.validate(signupInfo, { abortEarly: false });
+    } catch (validationErrors) {
+      const errors = {};
+      validationErrors.inner.forEach((err) => {
+        errors[err.path] = err.message;
+      });
+      setErrors(errors);
+      return;
+    }
 
     try {
       const url = `${BASE_URL}/auth/register`;
@@ -77,12 +77,10 @@ const Signup = () => {
         }, 1000);
       }
     } catch (err) {
-      if (err.response && err.response.data && err.response.data.error) {
+      if (err.response && Array.isArray(err.response.data?.error)) {
         const validationErrors = {};
-
-        err.response.data.error.forEach((err) => {
-          const fieldName = err.path[0];
-          validationErrors[fieldName] = err.message;
+        err.response.data.error.forEach((error) => {
+          validationErrors[error.path[0]] = error.message;
         });
         setErrors(validationErrors);
       } else {

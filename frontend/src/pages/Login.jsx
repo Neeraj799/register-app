@@ -15,17 +15,17 @@ const Login = () => {
 
   const navigate = useNavigate();
 
-  // const loginValidationSchema = yup.object().shape({
-  //   email: yup
-  //     .string()
-  //     .email("Email must be a valid email")
-  //     .required("Email is required"),
+  const loginValidationSchema = yup.object().shape({
+    email: yup
+      .string()
+      .email("Email must be a valid email")
+      .required("Email is required"),
 
-  //   password: yup
-  //     .string()
-  //     .min(6, "Password must be a atleast 6 characters long")
-  //     .required("Password is required"),
-  // });
+    password: yup
+      .string()
+      .min(6, "Password must be a atleast 6 characters long")
+      .required("Password is required"),
+  });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -42,16 +42,16 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // try {
-    //   await loginValidationSchema.validate(loginInfo, { abortEarly: false });
-    // } catch (validationErrors) {
-    //   const errors = {};
-    //   validationErrors.inner.forEach((err) => {
-    //     errors[err.path] = err.message;
-    //   });
-    //   setErrors(errors);
-    //   return;
-    // }
+    try {
+      await loginValidationSchema.validate(loginInfo, { abortEarly: false });
+    } catch (validationErrors) {
+      const errors = {};
+      validationErrors.inner.forEach((err) => {
+        errors[err.path] = err.message;
+      });
+      setErrors(errors);
+      return;
+    }
 
     try {
       const response = await axios.post(`${BASE_URL}/auth/login`, loginInfo, {

@@ -1,7 +1,88 @@
-import React from "react";
+import React, { useState } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
+import { LuAlignLeft } from "react-icons/lu";
 
 const Navbar = () => {
-  return <div></div>;
+  const [visible, setVisible] = useState(false);
+
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/login");
+  };
+
+  return (
+    <div>
+      <div className="flex items-center justify-between py-5">
+        <span className=" sm:flex  text-2xl font-extrabold text-blue-600">
+          FLIPKART
+        </span>
+
+        <ul className="hidden sm:flex gap-5 text-sm text-gray-700">
+          <NavLink to="/" className="flex flex-col items-center gap-1">
+            <p>HOME</p>
+            <hr className="w-2/4 border-none h-[1.5px] bg-gray-700 hidden"></hr>
+          </NavLink>
+          <NavLink
+            to="/collection"
+            className="flex flex-col items-center gap-1"
+          >
+            <p>COLLECTION</p>
+            <hr className="w-2/4 border-none h-[1.5px] bg-gray-700 hidden"></hr>
+          </NavLink>
+
+          <NavLink to="/profile" className="flex flex-col items-center gap-1">
+            <p>PROFILE</p>
+            <hr className="w-2/4 border-none h-[1.5px] bg-gray-700 hidden"></hr>
+          </NavLink>
+        </ul>
+        <button
+          onClick={handleLogout}
+          className="hidden sm:block bg-blue-600 border rounded-md p-2 text-white  "
+        >
+          Logout
+        </button>
+        <div className="flex sm:hidden">
+          <LuAlignLeft onClick={() => setVisible(true)} className="size-7 " />
+        </div>
+
+        {visible && (
+          <div className="absolute top-14 right-10  h-auto bg-white overflow-hidden transition-all shadow-lg">
+            <div className="flex flex-col text-gray-600">
+              <NavLink
+                onClick={() => setVisible(false)}
+                className="py-2 p-6 border "
+                to="/"
+              >
+                HOME
+              </NavLink>
+
+              <NavLink
+                onClick={() => setVisible(false)}
+                className="py-2 p-6 border"
+                to="/collection"
+              >
+                COLLECTION
+              </NavLink>
+
+              <NavLink
+                onClick={() => setVisible(false)}
+                className="py-2 p-6 border"
+                to="/profile"
+              >
+                PROFILE
+              </NavLink>
+
+              <div onClick={handleLogout} className="py-2 p-6 border">
+                Logout
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 };
 
 export default Navbar;
