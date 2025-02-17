@@ -9,8 +9,6 @@ const BookContextProvider = ({ children }) => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
 
   const value = {
     data,
@@ -25,10 +23,6 @@ const BookContextProvider = ({ children }) => {
     setTotalPages,
     searchQuery,
     setSearchQuery,
-    setLoading,
-    loading,
-    error,
-    setError,
   };
 
   return <BookContext.Provider value={value}>{children}</BookContext.Provider>;

@@ -1,11 +1,13 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import * as yup from "yup";
 import { BASE_URL } from "../config";
 import axios from "axios";
+import { AuthContext } from "../context/AuthContext";
 
 const Login = () => {
+  const { login } = useContext(AuthContext);
   const [loginInfo, setLoginInfo] = useState({
     email: "",
     password: "",
@@ -61,10 +63,11 @@ const Login = () => {
       });
 
       const result = await response.data;
-      localStorage.setItem("token", result.token);
-      toast.success(result.message, {
-        position: "top-right",
-      });
+
+      login(result.user, result.token);
+
+      toast.success(result.message, { position: "top-right" });
+
       setTimeout(() => {
         navigate("/");
       }, 1000);
@@ -127,7 +130,7 @@ const Login = () => {
             <p className="text-red-500 text-sm"> {errors.password}</p>
           )}
         </div>
-        <div className="flex items-center justify-center">
+        <div className="flex items-center justify-center mt-4">
           <button
             type="submit"
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"

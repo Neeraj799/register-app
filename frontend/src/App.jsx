@@ -11,11 +11,17 @@ import Navbar from "./components/Navbar";
 import Collection from "./pages/Collection";
 import Home from "./pages/Home";
 import Profile from "./pages/Profile";
+import AdminLogin from "./pages/AdminLogin";
 
 function App() {
   const location = useLocation();
 
-  const hideNavbarRoutes = ["/login", "/signUp"];
+  const hideNavbarRoutes = [
+    "/login",
+    "/signUp",
+    "/adminLogin",
+    "/adminDashboard",
+  ];
 
   const showNavbar = !hideNavbarRoutes.includes(location.pathname);
 
@@ -30,6 +36,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/collection" element={<Collection />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/adminLogin" element={<AdminLogin />} />
           <Route path="/adminDashboard" element={<AdminDashboard />} />
           <Route path="*" element={<PageNotFound />} />
           <Route path="/unauthorized" element={<Unauthorized />} />

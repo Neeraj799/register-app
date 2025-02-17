@@ -6,27 +6,33 @@ import { jwtDecode } from "jwt-decode";
 import CircularProgress from "@mui/material/CircularProgress";
 import Box from "@mui/material/Box";
 import { UserContext } from "../context/UserContext";
+import { AuthContext } from "../context/AuthContext";
+import { BASE_URL } from "../config";
+import { GlobalContext } from "../context/GlobalContext";
 
 const Home = () => {
-  const { userData, setUserData, loading, setLoading } =
-    useContext(UserContext);
+  const { userData, setUserData } = useContext(UserContext);
 
-  const [token, setToken] = useState("");
+  const { loading, setLoading } = useContext(GlobalContext);
+
+  const { token, isAuthenticated } = useContext(AuthContext);
 
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (!isAuthenticated || !token) {
+      navigate("/login");
+    }
+
     fetchData();
-  }, []);
+  }, [isAuthenticated, token]);
 
   const fetchData = async () => {
     try {
-      const token = localStorage.getItem("token");
-      setToken(token);
-      console.log(token);
+      setLoading(true);
 
       if (!token) {
-        navigate("/unauthorized");
+        navigate("/login");
         return;
       }
 
@@ -42,14 +48,11 @@ const Home = () => {
         return;
       }
 
-      const response = await axios.get(
-        `http://localhost:8080/auth/user/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axios.get(`${BASE_URL}/auth/user/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       setUserData(response.data);
     } catch (err) {

@@ -1,14 +1,16 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { LuAlignLeft } from "react-icons/lu";
+import { AuthContext } from "../context/AuthContext";
 
 const Navbar = () => {
   const [visible, setVisible] = useState(false);
+  const { isAuthenticated, logout } = useContext(AuthContext);
 
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
+    logout();
     navigate("/login");
   };
 
@@ -37,12 +39,21 @@ const Navbar = () => {
             <hr className="w-2/4 border-none h-[1.5px] bg-gray-700 hidden"></hr>
           </NavLink>
         </ul>
-        <button
-          onClick={handleLogout}
-          className="hidden sm:block bg-blue-600 border rounded-md p-2 text-white  "
-        >
-          Logout
-        </button>
+        {isAuthenticated ? (
+          <button
+            onClick={handleLogout}
+            className="hidden sm:block bg-blue-600 border rounded-md p-2 text-white  "
+          >
+            Logout
+          </button>
+        ) : (
+          <button
+            onClick={() => navigate("/login")}
+            className="hidden sm:block bg-blue-600 border rounded-md p-2 text-white  "
+          >
+            Login
+          </button>
+        )}
         <div className="flex sm:hidden">
           <LuAlignLeft onClick={() => setVisible(true)} className="size-7 " />
         </div>
@@ -74,9 +85,18 @@ const Navbar = () => {
                 PROFILE
               </NavLink>
 
-              <div onClick={handleLogout} className="py-2 p-6 border">
-                Logout
-              </div>
+              {isAuthenticated ? (
+                <div onClick={handleLogout} className="py-2 p-6 border">
+                  Logout
+                </div>
+              ) : (
+                <div
+                  onClick={() => navigate("/login")}
+                  className="py-2 p-6 border"
+                >
+                  Login
+                </div>
+              )}
             </div>
           </div>
         )}

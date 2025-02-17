@@ -3,39 +3,39 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Box, CircularProgress } from "@mui/material";
 import { BookContext } from "../context/BookContext";
+import { AuthContext } from "../context/AuthContext";
+import { BASE_URL } from "../config";
+import { GlobalContext } from "../context/GlobalContext";
 
 const Profile = () => {
-  const { books, setBooks, loading, setLoading, error, setError } =
-    useContext(BookContext);
+  const { books, setBooks } = useContext(BookContext);
 
-  const navigate = useNavigate();
+  const { loading, setLoading, error, setError } = useContext(GlobalContext);
+
+  const { token, isAuthenticated } = useContext(AuthContext);
 
   useEffect(() => {
-    const fetchBorrowHistory = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          navigate("/unauthorized");
-          return;
-        }
-        const response = await axios.get(
-          "http://localhost:8080/book/borrowHistory/",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        setBooks(response.data.books);
-      } catch (err) {
-        setError(err.response?.data?.message || "Failed to fetch data");
-      } finally {
-        setLoading(false);
-      }
-    };
+    if (isAuthenticated && token) {
+      fetchBorrowHistory();
+    }
+  }, [isAuthenticated, token]);
 
-    fetchBorrowHistory();
-  }, []);
+  const fetchBorrowHistory = async () => {
+    try {
+      setLoading(true);
+
+      const response = await axios.get(`${BASE_URL}/book/borrowHistory/`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setBooks(response.data.books);
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to fetch data");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg">

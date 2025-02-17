@@ -4,6 +4,9 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Box, CircularProgress } from "@mui/material";
 import { BookContext } from "../context/BookContext";
+import { AuthContext } from "../context/AuthContext";
+import { BASE_URL } from "../config";
+import { GlobalContext } from "../context/GlobalContext";
 
 const Collection = () => {
   const {
@@ -15,13 +18,23 @@ const Collection = () => {
     setTotalPages,
     searchQuery,
     setSearchQuery,
-    loading,
-    setLoading,
   } = useContext(BookContext);
+
+  const { loading, setLoading } = useContext(GlobalContext);
+
+  const { token } = useContext(AuthContext);
 
   const limit = 10;
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (token) {
+      fetchData();
+    } else {
+      navigate("/unauthorized");
+    }
+  }, [token]);
 
   useEffect(() => {
     if (!searchQuery) {
@@ -36,11 +49,8 @@ const Collection = () => {
 
   const fetchData = async () => {
     try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        navigate("/unauthorized");
-        return;
-      }
+      setLoading(true);
+
       const response = await axios.get(
         `http://localhost:8080/book/books/?page=${page}&limit=${limit}`,
         {
@@ -66,7 +76,7 @@ const Collection = () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `http://localhost:8080/book/search?query=${searchQuery}`
+        `${BASE_URL}/book/search?query=${searchQuery}`
       );
 
       setData(response.data.data);
@@ -95,14 +105,13 @@ const Collection = () => {
 
   const handleBorrow = async (bookId) => {
     try {
-      const token = localStorage.getItem("token");
       if (!token) {
         navigate("/unauthorized");
         return;
       }
 
       const response = await axios.post(
-        `http://localhost:8080/book/borrowBook/${bookId}`,
+        `${BASE_URL}/book/borrowBook/${bookId}`,
         {},
         {
           headers: {
@@ -124,14 +133,13 @@ const Collection = () => {
 
   const handleReturn = async (bookId) => {
     try {
-      const token = localStorage.getItem("token");
       if (!token) {
         navigate("/unauthorized");
         return;
       }
 
       const response = await axios.post(
-        `http://localhost:8080/book/returnBook/${bookId}`,
+        `${BASE_URL}/book/returnBook/${bookId}`,
         {},
         {
           headers: {
